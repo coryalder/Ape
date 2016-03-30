@@ -23,9 +23,9 @@ public struct Ape {
     }
     
     public struct APIResponse {
-        let body: Body
-        let urlResponse: NSHTTPURLResponse?
-        let error: ErrorType?
+        public let body: Body
+        public let urlResponse: NSHTTPURLResponse?
+        public let error: ErrorType?
     }
     
     public typealias ResponseClosure = (APIResponse)->(Void)
