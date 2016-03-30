@@ -35,7 +35,7 @@ public struct Ape {
     
     // pass in an auth closure, to mutate the request before sending.
     
-    init(method: Method = .Get, url: NSURL, auth: AuthClosure = { _ in }, body: Body = .None, completion: ResponseClosure) {
+    public init(method: Method = .Get, url: NSURL, auth: AuthClosure = { _ in }, body: Body = .None, completion: ResponseClosure) {
 
         let request = NSMutableURLRequest(URL: url)
         auth(request)
@@ -44,7 +44,7 @@ public struct Ape {
     }
     
     
-    init(method: Method = .Get, request: NSURLRequest, body: Body = .None, completion: ResponseClosure) {
+    public init(method: Method = .Get, request: NSURLRequest, body: Body = .None, completion: ResponseClosure) {
         
         let req = (request as? NSMutableURLRequest) ?? request.mutableCopy() as! NSMutableURLRequest
         
