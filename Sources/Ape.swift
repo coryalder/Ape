@@ -28,10 +28,10 @@ public struct Ape {
         let error: ErrorType?
     }
     
-    public let task: NSURLSessionDataTask
+    public typealias ResponseClosure = (APIResponse)->(Void)
+    public typealias AuthClosure = (NSMutableURLRequest)->(Void)
     
-    typealias ResponseClosure = (APIResponse)->(Void)
-    typealias AuthClosure = (NSMutableURLRequest)->(Void)
+    public let task: NSURLSessionDataTask
     
     // pass in an auth closure, to mutate the request before sending.
     
