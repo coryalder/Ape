@@ -9,20 +9,20 @@ import Foundation
 
 
 public struct Ape {
-    enum Method: String {
+    public enum Method: String {
         case Get = "GET"
         case Post = "POST"
         case Put = "PUT"
         case Delete = "DELETE"
     }
     
-    enum Body {
+    public enum Body {
         case Data(NSData)
         case JSON(AnyObject)
         case None
     }
     
-    struct APIResponse {
+    public struct APIResponse {
         let body: Body
         let urlResponse: NSHTTPURLResponse?
         let error: ErrorType?
