@@ -1,6 +1,6 @@
 # Ape
 
-A Swift library to make API requests easily and expressively.
+Ape is a tiny library I’ve being using to simplify some REST API tasks. Think of it as solving some of the problems Alamofire does, but it’s under 100 lines of code so you can wrap your head around the whole thing. 🙈🙊🙉
 
 ## Example Usage
 
