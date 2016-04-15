@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 public struct Ape {
     public enum Method: String {
         case Get = "GET"
@@ -25,7 +24,7 @@ public struct Ape {
     public struct APIResponse {
         public let body: Body
         public let urlResponse: NSHTTPURLResponse?
-        public let error: ErrorType?
+        public let error: ErrorProtocol?
     }
     
     public typealias ResponseClosure = (APIResponse)->(Void)
@@ -37,7 +36,7 @@ public struct Ape {
     
     public init(method: Method = .Get, url: NSURL, auth: AuthClosure = { _ in }, body: Body = .None, completion: ResponseClosure) {
 
-        let request = NSMutableURLRequest(URL: url)
+        let request = NSMutableURLRequest(url: url)
         auth(request)
         
         self.init(method: method, request: request, body: body, completion: completion)
