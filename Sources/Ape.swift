@@ -45,21 +45,21 @@ public struct Ape {
     
     public init(method: Method = .Get, request: NSURLRequest, body: Body = .None, completion: ResponseClosure) {
         
-        let req = (request as? NSMutableURLRequest) ?? request.mutableCopy() as! NSMutableURLRequest
+        let req: NSMutableURLRequest = (request as? NSMutableURLRequest) ?? request.mutableCopy() as! NSMutableURLRequest
         
-        req.HTTPMethod = method.rawValue
+        req.httpMethod = method.rawValue
         
         switch body {
         case .Data(let data):
-            req.HTTPBody = data
+            req.httpBody = data
         case .JSON(let obj):
-            req.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(obj, options: [])
+            req.httpBody = try? NSJSONSerialization.data(withJSONObject: obj, options: [])
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         case .None:
-            req.HTTPBody = nil
+            req.httpBody = nil
         }
         
-        self.task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
+        self.task = NSURLSession.shared().dataTask(with: request) {
             data, resp, err in
             
             var outBody: Body = .None
@@ -67,7 +67,7 @@ public struct Ape {
             if let data = data {
                 outBody = .Data(data) // we've at least got data
                 
-                if let json = try? NSJSONSerialization.JSONObjectWithData(data, options: []) {
+                if let json = try? NSJSONSerialization.jsonObject(with: data, options: []) {
                     outBody = .JSON(json)
                 }
                 
