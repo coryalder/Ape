@@ -16,36 +16,36 @@ public struct Ape {
     }
     
     public enum Body {
-        case Data(NSData)
+        case Data(Data)
         case JSON(AnyObject)
         case None
     }
     
     public struct APIResponse {
         public let body: Body
-        public let urlResponse: NSHTTPURLResponse?
-        public let error: ErrorProtocol?
+        public let urlResponse: HTTPURLResponse?
+        public let error: Error?
     }
     
     public typealias ResponseClosure = (APIResponse)->(Void)
-    public typealias AuthClosure = (NSMutableURLRequest)->(Void)
+    public typealias AuthClosure = (URLRequest)->(URLRequest)
     
-    public let task: NSURLSessionDataTask
+    public let task: URLSessionDataTask
     
     // pass in an auth closure, to mutate the request before sending.
     
-    public init(method: Method = .Get, url: NSURL, auth: AuthClosure = { _ in }, body: Body = .None, completion: ResponseClosure) {
+    public init(method: Method = .Get, url: URL, auth: AuthClosure = { $0 }, body: Body = .None, completion: ResponseClosure) {
 
-        let request = NSMutableURLRequest(url: url)
-        auth(request)
+        let request = URLRequest(url: url)
+        let mutatedRequest = auth(request)
         
-        self.init(method: method, request: request, body: body, completion: completion)
+        self.init(method: method, request: mutatedRequest, body: body, completion: completion)
     }
     
     
-    public init(method: Method = .Get, request: NSURLRequest, body: Body = .None, completion: ResponseClosure) {
+    public init(method: Method = .Get, request: URLRequest, body: Body = .None, completion: ResponseClosure) {
         
-        let req: NSMutableURLRequest = (request as? NSMutableURLRequest) ?? request.mutableCopy() as! NSMutableURLRequest
+        var req: URLRequest = request
         
         req.httpMethod = method.rawValue
         
@@ -53,13 +53,13 @@ public struct Ape {
         case .Data(let data):
             req.httpBody = data
         case .JSON(let obj):
-            req.httpBody = try? NSJSONSerialization.data(withJSONObject: obj, options: [])
+            req.httpBody = try? JSONSerialization.data(withJSONObject: obj, options: [])
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         case .None:
             req.httpBody = nil
         }
         
-        self.task = NSURLSession.shared().dataTask(with: request) {
+        self.task = URLSession.shared.dataTask(with: request) {
             data, resp, err in
             
             var outBody: Body = .None
@@ -67,17 +67,17 @@ public struct Ape {
             if let data = data {
                 outBody = .Data(data) // we've at least got data
                 
-                if let json = try? NSJSONSerialization.jsonObject(with: data, options: []) {
+                if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
                     outBody = .JSON(json)
                 }
                 
             }
             
             #if DEBUG
-            print("\(resp?.URL!): \((resp as? NSHTTPURLResponse)?.statusCode ?? 0)")
+            print("\(resp?.URL!): \((resp as? HTTPURLResponse)?.statusCode ?? 0)")
             #endif
 
-            completion(APIResponse(body: outBody, urlResponse: resp as? NSHTTPURLResponse, error: err))
+            completion(APIResponse(body: outBody, urlResponse: resp as? HTTPURLResponse, error: err))
 
         }
 
@@ -86,7 +86,7 @@ public struct Ape {
 }
 
 
-extension NSHTTPURLResponse {
+extension HTTPURLResponse {
     var asError: NSError? {
         guard self.statusCode != 200 else {
             return  nil
